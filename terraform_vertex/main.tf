@@ -58,25 +58,24 @@ resource "google_bigquery_dataset_iam_binding" "dataset_acces_viewer" {
 
 
 
-resource "google_bigquery_routine" "census" {
-    routine_id = var.routine_id
-    dataset_id = var.dataset_id
-    project = var.project_id
+resource "google_bigquery_routine" "cencus_filter_by_age" {
+  routine_id = var.routine_id
+  dataset_id = google_bigquery_dataset.dataset.dataset_id
+  project    = var.project_id
 
-    definition_body = <<-SQL
-      BEGIN
-        INSERT INTO `mlops13.github_mlops.census_by_age`
-        SELECT age, workclass, occupation
-        FROM `bigquery-public-data.ml_datasets.census_adult_income`
-        WHERE age < input_age;
-      END;
-    SQL
+  definition_body = <<-SQL
+    BEGIN
+      INSERT INTO `mlops13.github_mlops.census_by_age`
+      SELECT age, workclass, occupation
+      FROM `bigquery-public-data.ml_datasets.census_adult_income`
+      WHERE age < input_age;
+    END;
+  SQL
 
-    routine_type = "PROCEDURE"
+  routine_type = "PROCEDURE"
 
-    arguments {
-        name = "input_age"
-        data_type = jsonencode({ "typekind": "INT64" })
-    }
-
+  arguments {
+    name      = "input_age"
+    data_type     = jsonencode({ "typeKind" : "INT64" })
+  }
 }
