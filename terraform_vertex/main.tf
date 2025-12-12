@@ -11,28 +11,27 @@ resource "google_bigquery_dataset" "dataset" {
 
 
 resource "google_bigquery_table" "table1" {
-    table_id = var.table_id
-    dataset_id = var.dataset_id
-    project = var.project_id
+  table_id   = var.table_id
+  dataset_id = var.dataset_id
+  project    = var.project_id
 
-    schema = jsondecode([
-        {
-            name = "age"
-            type = "INTEGER"
-            mode = "REQUIRED"
-        },
-        {
-            name = "workclass"
-            type = "STRING"
-            mode = "REQUIRED"
-        },
-        {
-            name = "occupation"
-            type = "STRING"
-            mode = "REQUIRED"
-        }
-    ])
-
+  schema = jsonencode([
+    {
+      name = "age"
+      type = "INTEGER"
+      mode = "REQUIRED"
+    },
+    {
+      name = "workclass"
+      type = "STRING"
+      mode = "NULLABLE"
+    },
+    {
+      name = "occupation"
+      type = "STRING"
+      mode = "NULLABLE"
+    }
+  ])
 }
 
 
