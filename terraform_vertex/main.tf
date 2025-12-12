@@ -1,0 +1,83 @@
+provider "google"{
+    project = var.project_id
+    region = var.region
+}
+
+resource "google_bigquery_dataset" "dataset" {
+    dataset_id = var.dataset_id
+    project = var.project_id
+    location = var.region
+}
+
+
+resource "google_bigquery_table" "table1" {
+    table_id = var.table_id
+    dataset_id = var.dataset_id
+    project = var.project_id
+
+    schema = jsondecode([
+        {
+            name = "age"
+            type = "INTEGER"
+            mode = "REQUIRED"
+        },
+        {
+            name = "workclass"
+            type = "STRING"
+            mode = "REQUIRED"
+        },
+        {
+            name = "occupation"
+            type = "STRING"
+            mode = "REQUIRED"
+        }
+    ])
+
+}
+
+
+resource "google_bigquery_dataset_iam_binding" "dataset_acces_editor" {
+    dataset_id = var.dataset_id
+    project = var.project_id
+
+    role = "roles/bigquery.dataEditor"
+    members = [
+        "serviceAccount:github-mlops@mlops13.iam.gserviceaccount.com"
+    ]
+}
+
+
+resource "google_bigquery_dataset_iam_binding" "dataset_acces_viewer" {
+    dataset_id = var.dataset_id
+    project = var.project_id
+
+    role = "roles/bigquery.dataViewer"
+    members = [
+        "serviceAccount:github-mlops@mlops13.iam.gserviceaccount.com"
+    ]
+}
+
+
+
+resource "google_bigquery_routine" "census" {
+    routine_id = var.routine_id
+    dataset_id = var.dataset_id
+    project = var.project_id
+
+    definition_body = <<-SQL
+      BEGIN
+        INSERT INTO `mlops13.github_mlops.census_by_age`
+        SELECT age, workclass, occupation
+        FROM `bigquery-public-data.ml_datasets.census_adult_income`
+        WHERE age < input_age;
+      END;
+    SQL
+
+    routine_type = "PROCEDURE"
+
+    arguments {
+        name = "input_age"
+        data_type = jsondecode({ "typekind": "INT64" })
+    }
+
+}

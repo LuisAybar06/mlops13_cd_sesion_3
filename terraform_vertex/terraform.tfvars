@@ -1,0 +1,5 @@
+project_id = "mlops13"
+region = "US"
+dataset_id = "github_mlops"
+table_id = "census_by_age"
+routine_id = "cencus_filter_by_age"
