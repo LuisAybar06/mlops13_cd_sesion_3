@@ -76,7 +76,7 @@ resource "google_bigquery_routine" "census" {
 
     arguments {
         name = "input_age"
-        data_type = jsondecode({ "typekind": "INT64" })
+        data_type = jsonencode({ "typekind": "INT64" })
     }
 
 }
